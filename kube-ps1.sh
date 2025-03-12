@@ -286,6 +286,14 @@ With no arguments, turn off kube-ps1 status for this shell instance (default).
 EOF
 }
 
+kubetoggle() {
+  if [[ "${KUBE_PS1_ENABLED}" == 'off' ]]; then
+    KUBE_PS1_ENABLED=on
+  elif [[ "${KUBE_PS1_ENABLED}" == 'on' ]]; then
+    KUBE_PS1_ENABLED=off
+  fi
+}
+
 kubeon() {
   if [[ "${1}" == '-h' || "${1}" == '--help' ]]; then
     _kubeon_usage
