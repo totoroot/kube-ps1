@@ -23,9 +23,6 @@
 # Default values for the prompt
 # Override these values in ~/.zshrc or ~/.bashrc
 KUBE_PS1_BINARY="${KUBE_PS1_BINARY:-kubectl}"
-KUBE_PS1_SYMBOL_ENABLE="${KUBE_PS1_SYMBOL_ENABLE:-true}"
-KUBE_PS1_SYMBOL_PADDING="${KUBE_PS1_SYMBOL_PADDING:-false}"
-KUBE_PS1_SYMBOL_COLOR="${KUBE_PS1_SYMBOL_COLOR:-}"
 
 KUBE_PS1_NS_ENABLE="${KUBE_PS1_NS_ENABLE:-true}"
 KUBE_PS1_CONTEXT_ENABLE="${KUBE_PS1_CONTEXT_ENABLE:-true}"
@@ -143,60 +140,6 @@ _kube_ps1_color_bg() {
 
 _kube_ps1_binary_check() {
   command -v $1 >/dev/null
-}
-
-_kube_ps1_symbol() {
-  # Exit early if symbol display is disabled
-  [[ "${KUBE_PS1_SYMBOL_ENABLE}" == false ]] && return
-
-  local symbol_arg="${KUBE_PS1_SYMBOL_CUSTOM}"
-
-  local symbol=""
-  local symbol_default=$'\u2388'
-  local symbol_img="☸️" 
-  local k8s_glyph=$'\Uf10fe'
-  local k8s_symbol_color=blue
-  local oc_glyph=$'\ue7b7'
-  local oc_symbol_color=red
-  local custom_symbol_color="${KUBE_PS1_SYMBOL_COLOR:-$k8s_symbol_color}"
-
-  # Choose the symbol based on the provided argument or environment variable
-  case "${symbol_arg}" in
-    "img")
-      symbol="${symbol_img}"
-      ;;
-    "k8s")
-      symbol="$(_kube_ps1_color_fg "${custom_symbol_color}")${k8s_glyph}${KUBE_PS1_RESET_COLOR}"
-      ;;
-    "oc")
-      symbol="$(_kube_ps1_color_fg ${oc_symbol_color})${oc_glyph}${KUBE_PS1_RESET_COLOR}"
-      ;;
-    *)
-      case "$(_kube_ps1_shell_type)" in
-        bash)
-          if ((BASH_VERSINFO[0] >= 4)) && [[ $'\u2388' != "\\u2388" ]]; then
-            symbol="$(_kube_ps1_color_fg $custom_symbol_color)${symbol_default}${KUBE_PS1_RESET_COLOR}"
-            symbol_img=$'\u2638\ufe0f'
-          else
-            symbol=$'\xE2\x8E\x88'
-            symbol_img=$'\xE2\x98\xB8'
-          fi
-          ;;
-        zsh)
-          symbol="$(_kube_ps1_color_fg $custom_symbol_color)${symbol_default}${KUBE_PS1_RESET_COLOR}"
-          symbol_img="☸️"
-          ;;
-        *)
-          symbol="k8s"
-      esac
-  esac
-
-  # Append padding if enabled
-  if [[ "${KUBE_PS1_SYMBOL_PADDING}" == true ]]; then
-    echo "${symbol} "
-  else
-    echo "${symbol}"
-  fi
 }
 
 _kube_ps1_split_config() {
@@ -388,13 +331,6 @@ kube_ps1() {
       KUBE_PS1+="${KUBE_PS1_PREFIX}"
   else
       KUBE_PS1+="$(_kube_ps1_color_fg "${KUBE_PS1_PREFIX_COLOR}")${KUBE_PS1_PREFIX}${KUBE_PS1_RESET_COLOR}"
-  fi
-
-  # Symbol
-  KUBE_PS1+="$(_kube_ps1_symbol)"
-
-  if [[ -n "${KUBE_PS1_SEPARATOR}" ]] && [[ "${KUBE_PS1_SYMBOL_ENABLE}" == true ]]; then
-    KUBE_PS1+="${KUBE_PS1_SEPARATOR}"
   fi
 
   # Context
