@@ -287,10 +287,10 @@ EOF
 }
 
 kubetoggle() {
-  if [[ "${KUBE_PS1_ENABLED}" == 'off' ]]; then
-    KUBE_PS1_ENABLED=on
-  elif [[ "${KUBE_PS1_ENABLED}" == 'on' ]]; then
+  if [[ "${KUBE_PS1_ENABLED}" == 'on' ]]; then
     KUBE_PS1_ENABLED=off
+  else; then
+    KUBE_PS1_ENABLED=on
   fi
 }
 
